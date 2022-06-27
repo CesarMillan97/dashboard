@@ -2,11 +2,12 @@ import { projectFirestore } from "../firebase/config";
 import { useState, useRef, useEffect} from 'react'
 
 export const useCollection = (collection, _query, _orderBy) =>{
-   const [data, setData] = useState({})
+   const [documents, setDocuments] = useState(null)
    const [error, setError] = useState('')
 
-   const query = useRef(_query)
-   const orderBy = useRef(orderBy)
+   const query = useRef(_query).current
+   const orderBy = useRef(_orderBy).current
+   
 
    useEffect(()=> {
       let ref = projectFirestore.collection(collection)
@@ -22,10 +23,10 @@ export const useCollection = (collection, _query, _orderBy) =>{
       let unsub = ref.onSnapshot((snapshot) => {
          let results = []
          snapshot.docs.forEach((doc)=>{
-            results.push({...doc.data(), id: doc.id})
+            results.push({ ...doc.data(), id: doc.id })
          })
 
-         setData(results)
+         setDocuments(results)
          setError(null)
       }, (err) => {
          setError('Could not fetch data')
@@ -34,5 +35,5 @@ export const useCollection = (collection, _query, _orderBy) =>{
       return () => unsub()
    },[collection, query, orderBy])
 
-   return {error, data}
+   return {error, documents}
 }
