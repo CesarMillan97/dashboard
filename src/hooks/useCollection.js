@@ -20,7 +20,7 @@ export const useCollection = (collection, _query, _orderBy) =>{
          ref = ref.orderBy(...orderBy)
       }
 
-      let unsub = ref.onSnapshot((snapshot) => {
+      let unsubscribe = ref.onSnapshot((snapshot) => {
          let results = []
          snapshot.docs.forEach((doc)=>{
             results.push({ ...doc.data(), id: doc.id })
@@ -32,7 +32,7 @@ export const useCollection = (collection, _query, _orderBy) =>{
          setError('Could not fetch data')
          console.log(err.message);
       })
-      return () => unsub()
+      return () => unsubscribe()
    },[collection, query, orderBy])
 
    return {error, documents}
